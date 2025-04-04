@@ -1,9 +1,13 @@
 com/tictac/security/SecurityConfig.class
 com/tictac/controller/GameController.class
+com/tictac/model/chess/Piece.class
 com/tictac/repository/UserRepository.class
+com/tictac/controller/ChessController.class
 com/tictac/security/CustomUserDetailsService.class
 com/tictac/controller/GameController$GameState.class
+com/tictac/model/chess/Move.class
 com/tictac/controller/UserController.class
+com/tictac/model/chess/Board.class
 com/tictac/config/ThymeleafConfig.class
 com/tictac/TicTacApplication.class
 com/tictac/model/User.class
