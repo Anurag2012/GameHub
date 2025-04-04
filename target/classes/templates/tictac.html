@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>TicTac Game</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fas fa-gamepad"></i> Game Hub
+        </div>
+        <div class="nav-items">
+            <a href="/game-hub" class="nav-link">
+                <i class="fas fa-home"></i> Back to Games
+            </a>
+            <form th:action="@{/logout}" method="post" class="logout-form">
+                <button type="submit" class="nav-logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="game-container">
+        <div class="game-left-section">
+            <div class="game-info">
+                <h2><i class="fas fa-gamepad"></i> TicTac Game</h2>
+                <div th:if="${message}" class="game-message" th:text="${message}"></div>
+                <div class="current-player">
+                    <i class="fas fa-user"></i> Current Player: 
+                    <span th:text="${currentPlayer}" th:class="${currentPlayer == 'X' ? 'player-x' : 'player-o'}"></span>
+                </div>
+            </div>
+
+            <div class="game-board" th:attr="data-winning-line=${winningLine}">
+                <table>
+                    <tr th:each="row, rowStat : ${board}">
+                        <td th:each="cell, colStat : ${row}"
+                            th:attr="data-position=${rowStat.index + '-' + colStat.index}">
+                            <form th:if="${!gameOver}" th:action="@{/tictac/move}" method="post">
+                                <input type="hidden" name="row" th:value="${rowStat.index}">
+                                <input type="hidden" name="col" th:value="${colStat.index}">
+                                <button type="submit" 
+                                        class="cell-button"
+                                        th:text="${cell != ' ' ? cell : ''}"
+                                        th:classappend="${cell != ' ' ? (cell == 'X' ? 'player-x' : 'player-o') : ''}">
+                                </button>
+                            </form>
+                            <div th:if="${gameOver}" 
+                                 class="cell-button" 
+                                 th:text="${cell != ' ' ? cell : ''}"
+                                 th:classappend="${cell != ' ' ? (cell == 'X' ? 'player-x' : 'player-o') : ''}">
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <div class="winning-line"></div>
+            </div>
+
+            <div class="game-controls">
+                <form th:action="@{/tictac/new}" method="post" class="control-form">
+                    <button type="submit" class="control-btn new-game-btn">
+                        <i class="fas fa-plus"></i> New Game
+                    </button>
+                </form>
+                <form th:action="@{/tictac/reset}" method="post" class="control-form">
+                    <button type="submit" class="control-btn reset-btn">
+                        <i class="fas fa-undo"></i> Reset Board
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="game-right-section">
+            <div class="scoreboard">
+                <div class="score-card player-x-score">
+                    <div class="player-label">Player X</div>
+                    <div class="score" th:text="${scoreX}">0</div>
+                </div>
+                <div class="score-card draws">
+                    <div class="player-label">Draws</div>
+                    <div class="score" th:text="${draws}">0</div>
+                </div>
+                <div class="score-card player-o-score">
+                    <div class="player-label">Player O</div>
+                    <div class="score" th:text="${scoreO}">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Handle winning line visualization
+        function showWinningLine() {
+            const board = document.querySelector('.game-board');
+            const winningLine = board.getAttribute('data-winning-line');
+            
+            if (winningLine) {
+                const [start, end] = winningLine.split(',');
+                const line = document.querySelector('.winning-line');
+                
+                // Calculate line position based on winning cells
+                const startCell = document.querySelector(`[data-position="${start}"]`);
+                const endCell = document.querySelector(`[data-position="${end}"]`);
+                
+                if (startCell && endCell) {
+                    const startRect = startCell.getBoundingClientRect();
+                    const endRect = endCell.getBoundingClientRect();
+                    const boardRect = board.getBoundingClientRect();
+                    
+                    // Calculate line position and rotation
+                    const x1 = startRect.left + startRect.width / 2 - boardRect.left;
+                    const y1 = startRect.top + startRect.height / 2 - boardRect.top;
+                    const x2 = endRect.left + endRect.width / 2 - boardRect.left;
+                    const y2 = endRect.top + endRect.height / 2 - boardRect.top;
+                    
+                    const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+                    const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+                    
+                    line.style.width = `${length}px`;
+                    line.style.left = `${x1}px`;
+                    line.style.top = `${y1}px`;
+                    line.style.transform = `rotate(${angle}deg)`;
+                    line.classList.add('active');
+                }
+            }
+        }
+
+        // Add hover effect to cells
+        document.querySelectorAll('.cell-button').forEach(button => {
+            button.addEventListener('mouseover', function() {
+                if (!this.textContent) {
+                    this.classList.add('hover-effect');
+                }
+            });
+            button.addEventListener('mouseout', function() {
+                this.classList.remove('hover-effect');
+            });
+        });
+
+        // Show winning line when game ends
+        if (document.querySelector('.game-board').getAttribute('data-winning-line')) {
+            showWinningLine();
+        }
+    </script>
+</body>
+</html> 

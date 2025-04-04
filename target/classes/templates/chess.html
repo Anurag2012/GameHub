@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Chess Game</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Navbar styles */
+        .navbar {
+            background-color: #333;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .nav-brand {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-brand i {
+            margin-right: 10px;
+        }
+
+        .nav-items {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link i {
+            margin-right: 8px;
+        }
+
+        .nav-link:hover {
+            background-color: #555;
+        }
+
+        .logout-form {
+            margin: 0;
+        }
+
+        .nav-logout-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-logout-btn i {
+            margin-right: 8px;
+        }
+
+        .nav-logout-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        /* Game layout */
+        .game-container {
+            display: flex;
+            gap: 30px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .board-container {
+            flex: 0 0 auto;
+        }
+
+        .board {
+            border: 8px solid #634832;
+            border-radius: 4px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+
+        .square {
+            width: 70px;
+            height: 70px;
+            text-align: center;
+            font-size: 45px;
+            transition: background-color 0.2s;
+        }
+
+        .white { background-color: #f0d9b5; }
+        .black { background-color: #b58863; }
+        .selected { background-color: rgba(255, 235, 59, 0.5) !important; box-shadow: inset 0 0 15px rgba(255, 235, 59, 0.8); }
+        .possible-move { position: relative; background-color: rgba(119, 187, 65, 0.4) !important; }
+        .possible-move::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; background-color: rgba(119, 187, 65, 0.8); border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.7); box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); }
+        .possible-move.capture::before { width: 40px; height: 40px; border: 2px solid rgba(255, 87, 34, 0.7); background-color: rgba(255, 87, 34, 0.3); }
+        .possible-move:hover { cursor: pointer; background-color: rgba(119, 187, 65, 0.6) !important; }
+
+        .piece {
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.2s;
+        }
+
+        .piece:hover {
+            transform: scale(1.1);
+        }
+
+        .white-piece {
+            color: white;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .black-piece {
+            color: #333;
+            text-shadow: 1px 1px 2px #666;
+        }
+
+        /* Game info panel */
+        .game-info {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            min-width: 300px;
+        }
+
+        .game-state {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            color: #dc3545;
+            border: 2px solid #dc3545;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .game-state.check {
+            background: #fff3cd;
+            color: #856404;
+            border-color: #ffeeba;
+        }
+
+        .game-state.checkmate {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+        .game-state.stalemate {
+            background: #6c757d;
+            color: white;
+            border-color: #6c757d;
+        }
+
+        .current-player {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+        }
+
+        .captured-pieces {
+            margin-top: 20px;
+        }
+
+        .captured-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .captured-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .captured-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .captured-piece {
+            font-size: 30px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .new-game-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #9C27B0;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .new-game-btn:hover {
+            background-color: #7B1FA2;
+        }
+
+        .game-nav {
+            background-color: #f8f9fa;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 20px;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .game-nav-link {
+            padding: 8px 20px;
+            text-decoration: none;
+            color: #6c757d;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .game-nav-link:hover {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+
+        .game-nav-link.active {
+            background-color: #2196F3;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fas fa-gamepad"></i> Game Hub
+        </div>
+        <div class="nav-items">
+            <a href="/game-hub" class="nav-link">
+                <i class="fas fa-home"></i> Back to Games
+            </a>
+            <form th:action="@{/logout}" method="post" class="logout-form">
+                <button type="submit" class="nav-logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="game-container">
+        <!-- Left side: Chess Board -->
+        <div class="board-container">
+            <table class="board">
+                <tr th:each="row,i : ${board}">
+                    <td th:each="square,j : ${row}" 
+                        th:class="${(i.index + j.index) % 2 == 0 ? 'square white' : 'square black'}"
+                        th:attr="data-row=${i.index},data-col=${j.index}">
+                        <span th:if="${square != null}" 
+                              th:text="${square.type == 'pawn' ? (square.color == 'white' ? '♙' : '♟') :
+                                       square.type == 'rook' ? (square.color == 'white' ? '♖' : '♜') :
+                                       square.type == 'knight' ? (square.color == 'white' ? '♘' : '♞') :
+                                       square.type == 'bishop' ? (square.color == 'white' ? '♗' : '♝') :
+                                       square.type == 'queen' ? (square.color == 'white' ? '♕' : '♛') :
+                                       square.type == 'king' ? (square.color == 'white' ? '♔' : '♚') : ''}"
+                              th:class="${'piece ' + square.color + '-piece'}"
+                              th:attr="data-color=${square.color}">
+                        </span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Right side: Game Info -->
+        <div class="game-info">
+            <div class="game-state" th:classappend="${gameState.contains('Check!') ? 'check' : 
+                                                gameState.contains('Checkmate') ? 'checkmate' : 
+                                                gameState.contains('Stalemate') ? 'stalemate' : ''}"
+                 th:text="${gameState}">
+            </div>
+            <div class="current-player">
+                Current Player: <span th:text="${currentPlayer}"></span>
+            </div>
+
+            <div class="captured-pieces">
+                <div class="captured-section">
+                    <div class="captured-title">Captured by White:</div>
+                    <div class="captured-grid" th:if="${capturedByWhite != null}">
+                        <div class="captured-piece black-piece" 
+                             th:each="piece : ${capturedByWhite}"
+                             th:text="${piece.type == 'pawn' ? '♟' :
+                                     piece.type == 'rook' ? '♜' :
+                                     piece.type == 'knight' ? '♞' :
+                                     piece.type == 'bishop' ? '♝' :
+                                     piece.type == 'queen' ? '♛' : ''}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="captured-section">
+                    <div class="captured-title">Captured by Black:</div>
+                    <div class="captured-grid" th:if="${capturedByBlack != null}">
+                        <div class="captured-piece white-piece"
+                             th:each="piece : ${capturedByBlack}"
+                             th:text="${piece.type == 'pawn' ? '♙' :
+                                     piece.type == 'rook' ? '♖' :
+                                     piece.type == 'knight' ? '♘' :
+                                     piece.type == 'bishop' ? '♗' :
+                                     piece.type == 'queen' ? '♕' : ''}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <form action="/chess/new" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit" class="new-game-btn">New Game</button>
+            </form>
+        </div>
+    </div>
+
+    <form id="moveForm" action="/chess/move" method="post" style="display: none;">
+        <input type="hidden" name="fromRow" id="fromRow">
+        <input type="hidden" name="fromCol" id="fromCol">
+        <input type="hidden" name="toRow" id="toRow">
+        <input type="hidden" name="toCol" id="toCol">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+    </form>
+
+    <script th:inline="javascript">
+        let selectedPiece = null;
+        const currentPlayer = /*[[${currentPlayer}]]*/ 'white';
+        const csrfToken = /*[[${_csrf.token}]]*/ '';
+        const csrfHeader = /*[[${_csrf.headerName}]]*/ 'X-CSRF-TOKEN';
+
+        document.querySelectorAll('.square').forEach(square => {
+            square.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const row = parseInt(this.getAttribute('data-row'));
+                const col = parseInt(this.getAttribute('data-col'));
+                const piece = this.querySelector('.piece');
+
+                if (selectedPiece) {
+                    document.querySelectorAll('.selected, .possible-move').forEach(el => {
+                        el.classList.remove('selected', 'possible-move');
+                    });
+                    
+                    const fromRow = document.getElementById('fromRow').value;
+                    const fromCol = document.getElementById('fromCol').value;
+                    
+                    if (fromRow === row && fromCol === col) {
+                        selectedPiece = null;
+                        return;
+                    }
+
+                    const form = document.getElementById('moveForm');
+                    document.getElementById('toRow').value = row;
+                    document.getElementById('toCol').value = col;
+                    form.submit();
+                    
+                    selectedPiece = null;
+                } else if (piece && piece.getAttribute('data-color') === currentPlayer) {
+                    selectedPiece = piece;
+                    this.classList.add('selected');
+                    document.getElementById('fromRow').value = row;
+                    document.getElementById('fromCol').value = col;
+                    
+                    fetch(`/chess/moves?row=${row}&col=${col}`, {
+                        headers: {
+                            [csrfHeader]: csrfToken
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(moves => {
+                        moves.forEach(move => {
+                            const square = document.querySelector(`[data-row="${move[0]}"][data-col="${move[1]}"]`);
+                            if (square) {
+                                square.classList.add('possible-move');
+                            }
+                        });
+                    });
+                }
+            });
+        });
+
+        document.querySelector('form[action="/chess/new"]').addEventListener('submit', function(e) {
+            e.preventDefault();
+            fetch('/chess/new', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    [csrfHeader]: csrfToken
+                }
+            }).then(() => {
+                window.location.reload();
+            });
+        });
+    </script>
+</body>
+</html> 
