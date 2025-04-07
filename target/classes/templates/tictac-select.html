@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Select Tic Tac Toe Mode</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Simple styles for the selection page */
+        .selection-container {
+            max-width: 500px;
+            margin: 60px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .selection-container h1 {
+            color: #1e3c72;
+            margin-bottom: 30px;
+        }
+        .selection-buttons {
+            display: flex;
+            flex-direction: column; /* Stack buttons */
+            gap: 15px;
+            align-items: center;
+        }
+        .selection-button {
+            display: flex; /* Use flex for icon alignment */
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            width: 80%; /* Control button width */
+            box-sizing: border-box;
+        }
+        .selection-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .vs-player {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        }
+        .vs-cpu {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+        .fas {
+            margin-right: 10px; /* Space between icon and text */
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fas fa-gamepad"></i> Game Hub
+        </div>
+        <div class="nav-items">
+            <a href="/game-hub" class="nav-link">
+                <i class="fas fa-arrow-left"></i> Back to Hub
+            </a>
+        </div>
+    </nav>
+
+    <div class="selection-container">
+        <h1>Choose Your Opponent</h1>
+        <div class="selection-buttons">
+            <form th:action="@{/tictac/new}" method="post" style="width: 80%; margin: 0;">
+                <input type="hidden" name="vsCPU" value="false">
+                <button type="submit" class="selection-button vs-player">
+                    <i class="fas fa-user-friends"></i> Play vs Player
+                </button>
+            </form>
+            <form th:action="@{/tictac/new}" method="post" style="width: 80%; margin: 0;">
+                <input type="hidden" name="vsCPU" value="true">
+                <button type="submit" class="selection-button vs-cpu">
+                    <i class="fas fa-robot"></i> Play vs CPU
+                </button>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -13,6 +13,8 @@ body {
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .nav-brand {
@@ -62,7 +64,7 @@ body {
     border-radius: 12px;
     padding: 30px;
     width: 100%;
-    max-width: 350px;
+    max-width: 300px;
     text-align: center;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -71,6 +73,7 @@ body {
 .game-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    filter: brightness(1.1);
 }
 
 .game-card h2 {
@@ -186,6 +189,8 @@ button:hover {
     width: 250px;
     padding-left: 20px;
     border-left: 2px solid #f0f0f0;
+    display: flex;
+    flex-direction: column;
 }
 
 .scoreboard {
@@ -319,23 +324,30 @@ button:hover {
 
 .game-controls {
     display: flex;
-    gap: 15px;
-    justify-content: center;
-    margin-top: 20px;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: flex-start;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.control-form {
+    margin: 0;
 }
 
 .control-btn {
-    padding: 12px 24px;
+    padding: 10px 15px;
     border: none;
     border-radius: 8px;
-    font-size: 1em;
+    font-size: 0.9em;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: 8px;
-    min-width: 130px;
+    min-width: auto;
+    width: 100%;
     justify-content: center;
 }
 
@@ -1117,4 +1129,91 @@ button:hover {
 .cell-button.player-o {
     color: #3498db;
     text-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+}
+
+/* Styles moved from game-hub.html */
+.welcome-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    color: white;
+}
+
+/* Note: h1 styles likely handled globally, removed from here */
+
+/* Note: .username styles specific to welcome section context */
+.welcome-section .username {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+.game-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    padding: 20px;
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    filter: brightness(1.1);
+}
+
+.game-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.game-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.game-description {
+    color: #666;
+    font-size: 14px;
+}
+
+/* Make description lighter on specific cards */
+.tictac-card .game-description,
+.chess-card .game-description {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.tictac-card {
+    background: linear-gradient(135deg, #2196F3, #1976D2);
+    color: white;
+    /* Add subtle border */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.chess-card {
+    background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+    color: white;
+    /* Add subtle border */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Add background for RPS card */
+.rps-card {
+    background: linear-gradient(135deg, #ffb74d, #ffa726); /* Orange gradient */
+    color: #333; /* Darker text for better contrast on orange */
+}
+
+.rps-card .game-description {
+     color: rgba(0, 0, 0, 0.7); /* Darker description */
+}
+
+/* End of styles moved from game-hub.html */
+
+/* Add specific container for game hub page */
+.game-hub-container {
+    max-width: 800px;
+    width: 90%; /* Add some horizontal padding on very small screens */
+    margin: 40px auto 40px auto; /* Reduced top margin for less space above welcome section */
+    text-align: center;
 } 
