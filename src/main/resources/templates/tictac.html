@@ -44,6 +44,7 @@
                                 <button type="submit" 
                                         class="cell-button"
                                         th:text="${cell != ' ' ? cell : ''}"
+                                        th:disabled="${(vsCPU and currentPlayer == 'O') or cell == 'X' or cell == 'O'}" 
                                         th:classappend="${cell != ' ' ? (cell == 'X' ? 'player-x' : 'player-o') : ''}">
                                 </button>
                             </form>
@@ -57,22 +58,17 @@
                 </table>
                 <div class="winning-line"></div>
             </div>
+        </div>
 
+        <div class="game-right-section">
             <div class="game-controls">
-                <form th:action="@{/tictac/new}" method="post" class="control-form">
-                    <button type="submit" class="control-btn new-game-btn">
-                        <i class="fas fa-plus"></i> New Game
-                    </button>
-                </form>
                 <form th:action="@{/tictac/reset}" method="post" class="control-form">
                     <button type="submit" class="control-btn reset-btn">
                         <i class="fas fa-undo"></i> Reset Board
                     </button>
                 </form>
             </div>
-        </div>
 
-        <div class="game-right-section">
             <div class="scoreboard">
                 <div class="score-card player-x-score">
                     <div class="player-label">Player X</div>
